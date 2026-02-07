@@ -4,7 +4,7 @@ from typing import TypedDict
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from src.etl.drivers import ITA_VESTIBULAR_PROVAS_FLOW
+from src.etl.drivers import ITA_VESTIBULAR_PROVAS_FLOW, EXEMPLO_COM_TABELA
 
 
 class ExtractionParams(TypedDict):
@@ -19,8 +19,10 @@ def extraction(params: ExtractionParams):
   driver = webdriver.Chrome(options=options)
 
   try:
-    driver.get(ITA_VESTIBULAR_PROVAS_FLOW.url)
-    ITA_VESTIBULAR_PROVAS_FLOW.navigate(driver)
+    driver.get(EXEMPLO_COM_TABELA.url)
+    EXEMPLO_COM_TABELA.navigate(driver)
+    data = EXEMPLO_COM_TABELA.tables.get_data(driver)
+    print(data)
   finally:
     driver.quit()
 

@@ -1,72 +1,59 @@
-from typing import Optional, List
-from dataclasses import dataclass, field
-
-from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.remote.webelement import WebElement
-
 from src.etl.constants import PROVAS_ITA_VESTIBULAR_URL
-
-
-@dataclass
-class SeleniumElement:
-  name: Optional[str] = None
-  identifier: str = ""
-  identifier_type: By = By.XPATH
-  tag: Optional[str] = None
-
-  def get(self, driver: WebDriver) -> WebElement:
-    return driver.find_element(self.identifier_type, self.identifier)
-
-  def get_all(self, driver: WebDriver) -> List[WebElement]:
-    return driver.find_elements(self.identifier_type, self.identifier)
-
-  def click(self, driver: WebDriver) -> None:
-    self.get(driver).click()
-
-  def send_keys(self, driver: WebDriver, keys: str) -> None:
-    self.get(driver).send_keys(keys)
-
-
-@dataclass
-class SeleniumElementWithIframes(SeleniumElement):
-  iframes: List[SeleniumElement] = field(default_factory=list)
-
-  def set_iframes(self, driver: WebDriver) -> None:
-    for iframe in self.iframes:
-      driver.switch_to.frame(iframe.get(driver))
-
-
-@dataclass
-class SeleniumTable(SeleniumElement): ...
-
-
-@dataclass
-class ITAProvasFlow:
-  url: str
-  navigation_steps: List[SeleniumElement | SeleniumElementWithIframes]
-  # tables: SeleniumTable | List[SeleniumTable]
-
-  def navigate(self, driver: WebDriver) -> None:
-    for step in self.navigation_steps:
-      step.get(driver).click()
-      if isinstance(step, SeleniumElementWithIframes):
-        step.set_iframes(driver)
-      if isinstance(step, SeleniumTable):
-        step.get(driver).click()
-      if isinstance(step, SeleniumElement):
-        step.get(driver).click()
-
+from src.utils.selenium_elements import (
+  BaseElement,
+  SeleniumElement,
+  ITAProvasFlow,
+  SeleniumTable,
+  SeleniumTableRow,
+)
 
 ITA_VESTIBULAR_PROVAS_FLOW = ITAProvasFlow(
   url=PROVAS_ITA_VESTIBULAR_URL,
   navigation_steps=[
-    SeleniumElementWithIframes(
-      identifier="//a[@href='provas.htm' and @target='mainFrame']",
-      tag="a",
+    SeleniumElement(
+      element=BaseElement(
+        identifier="//a[@href='provas.htm' and @target='mainFrame']",
+        tag="a",
+      ),
       iframes=[
         SeleniumElement(identifier="//frame[@name='mainFrame']", tag="iframe"),
       ],
-    )
+    ),
   ],
+)
+
+EXEMPLO_COM_TABELA = ITAProvasFlow(
+  url="https://getbootstrap.com/",
+  navigation_steps=[
+    SeleniumElement(
+      element=BaseElement(
+        identifier="//*[@id='bdNavbar']/div[2]/ul[1]/li[1]/a",
+        tag="a",
+      ),
+    ),
+    SeleniumElement(
+      element=BaseElement(
+        identifier="//*[@id='bd-docs-nav']/ul/li[4]/ul/li[4]/a",
+        tag="a",
+      ),
+    ),
+  ],
+  tables=SeleniumTable(
+    element=BaseElement(
+      identifier="/html/body/div[2]/main/div[3]/div[1]/div/table/tbody",
+      tag="table",
+    ),
+    row=SeleniumTableRow(
+      element=BaseElement(
+        identifier=".//tr",
+        tag="tr",
+      ),
+      item=SeleniumElement(
+        element=BaseElement(
+          identifier=".//td",
+          tag="td",
+        ),
+      ),
+    )
+  ),
 )
