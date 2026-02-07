@@ -1,4 +1,4 @@
-# Task (https://taskfile.dev) - use: task migrate | task makemigrations -- "mensagem"
+# Task (https://taskfile.dev) - use: task migrate | task makemigrations -- "message"
 version: "3"
 
 vars:
@@ -6,48 +6,48 @@ vars:
 
 tasks:
   default:
-    desc: Lista tarefas disponíveis
+    desc: List available tasks
     cmds:
       - task --list
-  
+
   api:
-    desc: Inicia a API
+    desc: Start the API
     cmds:
       - docker compose up -d api
 
   api-stop:
-    desc: Para a API
+    desc: Stop the API
     cmds:
       - docker compose stop api
 
   migrate:
-    desc: Aplica as migrations no banco
+    desc: Apply migrations to the database
     cmds:
       - "{{.ALEMBIC}} upgrade head"
 
   makemigrations:
-    desc: "Gera migração a partir dos models (use: task makemigrations -- 'sua mensagem')"
+    desc: "Generate migration from models (use: task makemigrations -- 'your message')"
     vars:
       MSG: "{{or .CLI_ARGS \"auto\"}}"
     cmds:
       - '{{.ALEMBIC}} revision --autogenerate -m "{{.MSG}}"'
 
   check:
-    desc: "Roda ruff check (lint)"
+    desc: Run ruff check (lint)
     cmds:
       - pipenv run ruff check .
 
   format:
-    desc: "Formata o código com ruff (indent 2)"
+    desc: Format code with ruff (indent 2)
     cmds:
       - pipenv run ruff format .
 
   chromedriver:
-    desc: "Baixa o ChromeDriver via Docker (binário Linux na raiz do projeto)"
+    desc: Download ChromeDriver via Docker (Linux binary at project root)
     cmds:
       - docker compose run --rm download-chromedriver
-    
+
   extraction:
-    desc: "Extrai provas"
+    desc: Run extraction
     cmds:
       - PYTHONPATH=. pipenv run python src/etl/extraction.py
