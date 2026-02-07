@@ -38,7 +38,7 @@ jobs:
         run: pip install pipenv
 
       - name: Install dependencies
-        run: pipenv install --dev --deploy
+        run: pipenv install --dev
 
       - name: Run migrations
         run: pipenv run python -m alembic -c alembic.ini upgrade head
@@ -58,7 +58,7 @@ jobs:
         run: pip install pipenv
 
       - name: Install dependencies
-        run: pipenv install --dev --deploy
+        run: pipenv install --dev
 
       - name: Ruff check
         run: pipenv run ruff check .
