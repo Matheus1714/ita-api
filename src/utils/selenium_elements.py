@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
+
 @dataclass
 class BaseElement:
   name: Optional[str] = None
@@ -23,6 +24,7 @@ class BaseElement:
 
   def send_keys(self, ctx, keys: str) -> None:
     self.find(ctx).send_keys(keys)
+
 
 @dataclass
 class SeleniumElement(BaseElement):
@@ -51,9 +53,11 @@ class SeleniumElement(BaseElement):
   def send_keys(self, driver: WebDriver, keys: str) -> None:
     self.find(driver).send_keys(keys)
 
+
 @dataclass
 class SeleniumTableRow(SeleniumElement):
   item: SeleniumElement = None
+
 
 @dataclass
 class SeleniumTable(SeleniumElement):
@@ -67,6 +71,7 @@ class SeleniumTable(SeleniumElement):
       items = self.row.item.element.find_all(row)
       data.append([item.text for item in items])
     return data
+
 
 @dataclass
 class ITAProvasFlow:

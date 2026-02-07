@@ -54,6 +54,6 @@ EXEMPLO_COM_TABELA = ITAProvasFlow(
           tag="td",
         ),
       ),
-    )
+    ),
   ),
 )

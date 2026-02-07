@@ -2,10 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug: ETL Extraction",
+      "name": "Debug: ETL Extract",
       "type": "debugpy",
       "request": "launch",
-      "module": "src.etl.extraction",
+      "module": "src.etl.extract",
+      "args": [
+        "--no-headless"
+      ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
     },
