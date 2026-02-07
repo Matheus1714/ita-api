@@ -41,3 +41,13 @@ tasks:
     desc: "Formata o código com ruff (indent 2)"
     cmds:
       - pipenv run ruff format .
+
+  chromedriver:
+    desc: "Baixa o ChromeDriver compatível com o Chrome instalado"
+    cmds:
+      - PYTHONPATH=. pipenv run python src/download_chromedriver.py
+    
+  extraction:
+    desc: "Extrai provas"
+    cmds:
+      - PYTHONPATH=. pipenv run python src/etl/extraction.py

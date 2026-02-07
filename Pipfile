@@ -10,10 +10,13 @@ sqlalchemy = {extras = ["asyncio"], version = "*"}
 asyncpg = "*"
 pydantic-settings = "*"
 psycopg2-binary = "*"
+requests = "*"
+selenium = "*"
 
 [dev-packages]
 alembic = "*"
 ruff = "*"
+tqdm = "*"
 
 [requires]
 python_version = "3.10"
