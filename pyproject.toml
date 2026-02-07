@@ -1,0 +1,15 @@
+[project]
+name = "ita-api"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[tool.ruff]
+indent-width = 2
+target-version = "py310"
+line-length = 88
+
+[tool.ruff.lint]
+# E=pycodestyle, F=Pyflakes, I=isort, BLE=blind-except (ex.: BLE001 não permite except Exception), UP=pyupgrade
+select = ["E", "F", "I", "BLE", "UP"]
+# Não exige docstrings
+ignore = ["D"]

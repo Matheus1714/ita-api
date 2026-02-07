@@ -1,0 +1,43 @@
+# Task (https://taskfile.dev) - use: task migrate | task makemigrations -- "mensagem"
+version: "3"
+
+vars:
+  ALEMBIC: pipenv run python -m alembic -c alembic.ini
+
+tasks:
+  default:
+    desc: Lista tarefas disponíveis
+    cmds:
+      - task --list
+  
+  api:
+    desc: Inicia a API
+    cmds:
+      - docker compose up -d api
+
+  api-stop:
+    desc: Para a API
+    cmds:
+      - docker compose stop api
+
+  migrate:
+    desc: Aplica as migrations no banco
+    cmds:
+      - "{{.ALEMBIC}} upgrade head"
+
+  makemigrations:
+    desc: "Gera migração a partir dos models (use: task makemigrations -- 'sua mensagem')"
+    vars:
+      MSG: "{{or .CLI_ARGS \"auto\"}}"
+    cmds:
+      - '{{.ALEMBIC}} revision --autogenerate -m "{{.MSG}}"'
+
+  check:
+    desc: "Roda ruff check (lint)"
+    cmds:
+      - pipenv run ruff check .
+
+  format:
+    desc: "Formata o código com ruff (indent 2)"
+    cmds:
+      - pipenv run ruff format .
