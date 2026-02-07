@@ -12,7 +12,6 @@ class Settings(BaseSettings):
 
   @property
   def database_url_sync(self) -> str:
-    """URL síncrona para Alembic (usa psycopg2 em vez de asyncpg)."""
     return self.database_url.replace("postgresql+asyncpg://", "postgresql+psycopg2://")
 
 
