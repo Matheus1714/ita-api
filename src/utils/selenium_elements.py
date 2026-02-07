@@ -1,4 +1,4 @@
-from typing import Optional, List, Any
+from typing import Optional, List, Dict
 from dataclasses import dataclass, field
 
 from selenium.webdriver.common.by import By
@@ -34,8 +34,10 @@ class SeleniumElement(BaseElement):
   def _resolve_context(self, driver: WebDriver):
     driver.switch_to.default_content()
 
-    for iframe in self.iframes:
-      driver.switch_to.frame(iframe.find(driver))
+    if self.iframes:
+      for iframe in self.iframes:
+        if iframe is not None:
+          driver.switch_to.frame(iframe.find(driver))
 
     return driver
 
@@ -44,10 +46,11 @@ class SeleniumElement(BaseElement):
     return self.element.find(context)
 
   def click(self, driver: WebDriver) -> None:
+    context = self._resolve_context(driver)
     try:
-      self.find(driver).click()
+      self.find(context).click()
     except:
-      element = self.find(driver)
+      element = self.find(context)
       driver.execute_script("arguments[0].click()", element)
 
   def send_keys(self, driver: WebDriver, keys: str) -> None:
@@ -57,27 +60,38 @@ class SeleniumElement(BaseElement):
 @dataclass
 class SeleniumTableRow(SeleniumElement):
   item: SeleniumElement = None
+  skip_first: bool = False
 
 
 @dataclass
 class SeleniumTable(SeleniumElement):
   row: SeleniumTableRow = None
+  headers: List[str] = field(default_factory=list)
 
-  def get_data(self, driver: WebDriver) -> List[List[str]]:
+  def get_data(self, driver: WebDriver) -> List[Dict[str, str]]:
     data = []
     element = self.find(driver)
     rows = self.row.element.find_all(element)
+    if self.row.skip_first:
+      rows = rows[1:]
     for row in rows:
       items = self.row.item.element.find_all(row)
-      data.append([item.text for item in items])
-    return data
-
+      row_data = []
+      for item in items:
+        links = item.find_elements(By.TAG_NAME, "a")
+        if links:
+          row_data.append(links[0].get_attribute("href") or item.text)
+        else:
+          row_data.append(item.text)
+      data.append(row_data)
+    structured_data = [dict(zip(self.headers, row)) for row in data]
+    return structured_data
 
 @dataclass
 class ITAProvasFlow:
   url: str
   navigation_steps: List[SeleniumElement] = field(default_factory=list)
-  tables: SeleniumTable | List[SeleniumTable] = None
+  tables: List[SeleniumTable] = None
 
   def navigate(self, driver: WebDriver) -> None:
     for step in self.navigation_steps:
