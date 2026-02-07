@@ -43,9 +43,9 @@ tasks:
       - pipenv run ruff format .
 
   chromedriver:
-    desc: "Baixa o ChromeDriver compatível com o Chrome instalado"
+    desc: "Baixa o ChromeDriver via Docker (binário Linux na raiz do projeto)"
     cmds:
-      - PYTHONPATH=. pipenv run python src/download_chromedriver.py
+      - docker compose run --rm download-chromedriver
     
   extraction:
     desc: "Extrai provas"

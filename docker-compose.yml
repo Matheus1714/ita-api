@@ -1,6 +1,23 @@
 services:
+  # Container standalone só para baixar ChromeDriver. Não depende de nada.
+  # Uso (na raiz do projeto): docker compose run --rm download-chromedriver
+  # O binário será gravado em ./chromedriver na raiz do projeto.
+  download-chromedriver:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.chromedriver
+    container_name: download-chromedriver
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: ["python", "-m", "src.download_chromedriver", "--force"]
+    profiles:
+      - chromedriver
+
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
     ports:
       - "8000:8000"
     container_name: ita-api

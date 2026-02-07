@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import shutil
 import sys
@@ -15,10 +16,17 @@ from tqdm import tqdm
 
 from src.utils.get_os import get_os
 from src.utils.get_arch import get_arch
-from src.constants import OperatingSystem, OS_ARCH_MAP
+from src.constants import Architecture, OperatingSystem, OS_ARCH_MAP
 
-CHROMEDRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com"
 CHROMEDRIVER_LATEST_URL = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json"
+
+# Nomes de plataforma usados pela API (diferentes do OS_ARCH_MAP)
+# Linux: API só oferece linux64; em ARM64 usamos linux64 (ex.: emulação no Docker)
+OS_ARCH_TO_API_PLATFORM = {
+  OperatingSystem.MACOS: {Architecture.X64: "mac-x64", Architecture.ARM64: "mac-arm64"},
+  OperatingSystem.LINUX: {Architecture.X64: "linux64", Architecture.ARM64: "linux64"},
+  OperatingSystem.WINDOWS: {Architecture.X64: "win64", Architecture.ARM64: "win64"},
+}
 
 
 def _parse_major_version(version_output: str) -> str:
@@ -96,32 +104,35 @@ def _get_chrome_version() -> Optional[str]:
   return None
 
 
-def _get_latest_chromedriver_version():
+def _get_stable_channel_data():
+  """Baixa o JSON e retorna (version, chromedriver_downloads_list)."""
   try:
     response = requests.get(CHROMEDRIVER_LATEST_URL, timeout=10)
     response.raise_for_status()
     data = response.json()
-
-    stable_version = data.get("channels", {}).get("Stable", {}).get("version")
-    return stable_version
+    stable = data.get("channels", {}).get("Stable", {})
+    version = stable.get("version")
+    downloads = stable.get("downloads", {}).get("chromedriver", [])
+    return version, downloads
   except Exception as e:
-    print(f"Error getting latest ChromeDriver version: {e}", file=sys.stderr)
-    return None
+    print(f"Error getting Chrome for Testing data: {e}", file=sys.stderr)
+    return None, []
 
 
-def _get_chromedriver_download_url(version: str) -> Tuple[str, str]:
+def _get_chromedriver_url_for_platform(downloads: list) -> Tuple[str, str]:
+  """Escolhe URL e extensão do ChromeDriver a partir da lista de downloads do JSON."""
   os_ = get_os()
   arch = get_arch()
-
-  os_arch = OS_ARCH_MAP[os_][arch]
-  ext = "zip"
-
-  url = (
-    "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/"
-    f"{version}/{os_arch}/chromedriver-{os_arch}.{ext}"
-  )
-
-  return url, ext
+  if not os_:
+    raise RuntimeError("Could not detect operating system")
+  api_platform = OS_ARCH_TO_API_PLATFORM.get(os_, {}).get(arch, "linux64")
+  for item in downloads:
+    if item.get("platform") == api_platform:
+      url = item.get("url")
+      if url:
+        ext = "zip" if url.endswith(".zip") else "tar.gz"
+        return url, ext
+  raise RuntimeError(f"No ChromeDriver download for platform: {api_platform}")
 
 
 def download_file(url, filepath):
@@ -183,6 +194,14 @@ def make_executable(filepath):
 
 
 def main():
+  parser = argparse.ArgumentParser(description="Download ChromeDriver")
+  parser.add_argument(
+    "--force",
+    action="store_true",
+    help="Replace existing ChromeDriver without prompting (for non-interactive/Docker)",
+  )
+  args = parser.parse_args()
+
   print("=" * 60)
   print("Download ChromeDriver")
   print("=" * 60)
@@ -191,12 +210,13 @@ def main():
   chromedriver_path = project_root / "chromedriver"
 
   if chromedriver_path.exists():
-    response = input(
-      f"ChromeDriver already exists in {chromedriver_path}. Do you want to replace it? (y/N): "
-    )
-    if response.lower() != "y":
-      print("Operation cancelled.")
-      return
+    if not args.force:
+      response = input(
+        f"ChromeDriver already exists in {chromedriver_path}. Do you want to replace it? (y/N): "
+      )
+      if response.lower() != "y":
+        print("Operation cancelled.")
+        return
     os.remove(chromedriver_path)
 
   chrome_version = _get_chrome_version()
@@ -204,16 +224,16 @@ def main():
     print(f"Chrome version detected: {chrome_version}")
 
   print("Getting latest ChromeDriver version...")
-  latest_version = _get_latest_chromedriver_version()
+  latest_version, chromedriver_downloads = _get_stable_channel_data()
 
-  if not latest_version:
-    print("Error getting latest ChromeDriver version", file=sys.stderr)
+  if not latest_version or not chromedriver_downloads:
+    print("Error getting ChromeDriver version or downloads list", file=sys.stderr)
     sys.exit(1)
 
   print(f"Latest ChromeDriver version: {latest_version}")
 
   try:
-    download_url, ext = _get_chromedriver_download_url(latest_version)
+    download_url, ext = _get_chromedriver_url_for_platform(chromedriver_downloads)
   except Exception as e:
     print(f"Error getting download URL: {e}", file=sys.stderr)
     sys.exit(1)
