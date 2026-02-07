@@ -7,6 +7,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from src.etl.constants import PROVAS_ITA_VESTIBULAR_URL
 
+
 @dataclass
 class SeleniumElement:
   name: Optional[str] = None
@@ -19,12 +20,13 @@ class SeleniumElement:
 
   def get_all(self, driver: WebDriver) -> List[WebElement]:
     return driver.find_elements(self.identifier_type, self.identifier)
-  
+
   def click(self, driver: WebDriver) -> None:
     self.get(driver).click()
-  
+
   def send_keys(self, driver: WebDriver, keys: str) -> None:
     self.get(driver).send_keys(keys)
+
 
 @dataclass
 class SeleniumElementWithIframes(SeleniumElement):
@@ -34,9 +36,10 @@ class SeleniumElementWithIframes(SeleniumElement):
     for iframe in self.iframes:
       driver.switch_to.frame(iframe.get(driver))
 
+
 @dataclass
-class SeleniumTable(SeleniumElement):
-  ...
+class SeleniumTable(SeleniumElement): ...
+
 
 @dataclass
 class ITAProvasFlow:
@@ -54,6 +57,7 @@ class ITAProvasFlow:
       if isinstance(step, SeleniumElement):
         step.get(driver).click()
 
+
 ITA_VESTIBULAR_PROVAS_FLOW = ITAProvasFlow(
   url=PROVAS_ITA_VESTIBULAR_URL,
   navigation_steps=[
@@ -61,11 +65,8 @@ ITA_VESTIBULAR_PROVAS_FLOW = ITAProvasFlow(
       identifier="//a[@href='provas.htm' and @target='mainFrame']",
       tag="a",
       iframes=[
-        SeleniumElement(
-          identifier="//frame[@name='mainFrame']",
-          tag="iframe"
-        ),
-      ]
+        SeleniumElement(identifier="//frame[@name='mainFrame']", tag="iframe"),
+      ],
     )
-  ]
+  ],
 )

@@ -1,13 +1,16 @@
 from enum import Enum
 
+
 class OperatingSystem(Enum):
   MACOS = "darwin"
   LINUX = "linux"
   WINDOWS = "windows"
 
+
 class Architecture(Enum):
   X64 = "x64"
   ARM64 = "arm64"
+
 
 OS_ARCH_MAP = {
   OperatingSystem.MACOS: {

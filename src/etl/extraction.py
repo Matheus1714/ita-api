@@ -6,21 +6,23 @@ from selenium.webdriver.chrome.options import Options
 
 from src.etl.drivers import ITA_VESTIBULAR_PROVAS_FLOW
 
+
 class ExtractionParams(TypedDict):
   headless: bool
+
 
 def extraction(params: ExtractionParams):
   options = Options()
 
   if params["headless"]:
-      options.add_argument("--headless")
+    options.add_argument("--headless")
   driver = webdriver.Chrome(options=options)
 
   try:
-      driver.get(ITA_VESTIBULAR_PROVAS_FLOW.url)
-      ITA_VESTIBULAR_PROVAS_FLOW.navigate(driver)
+    driver.get(ITA_VESTIBULAR_PROVAS_FLOW.url)
+    ITA_VESTIBULAR_PROVAS_FLOW.navigate(driver)
   finally:
-      driver.quit()
+    driver.quit()
 
 
 if __name__ == "__main__":

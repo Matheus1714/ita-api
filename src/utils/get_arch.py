@@ -2,6 +2,7 @@ import platform
 
 from src.constants import Architecture
 
+
 def get_arch() -> Architecture:
   machine = platform.machine().lower()
 
