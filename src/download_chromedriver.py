@@ -10,13 +10,12 @@ import tarfile
 import requests
 from pathlib import Path
 from typing import Optional, Tuple
-import logging
+
+from tqdm import tqdm
 
 from src.utils.get_os import get_os
 from src.utils.get_arch import get_arch
 from src.constants import OperatingSystem, OS_ARCH_MAP
-
-logging.basicConfig(level=logging.INFO)
 
 CHROMEDRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com"
 CHROMEDRIVER_LATEST_URL = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json"
@@ -87,7 +86,7 @@ def _get_chrome_version() -> Optional[str]:
             return _get_chrome_version_windows()
 
     except Exception:
-        logging.exception("Error detecting Chrome version")
+        print("Error detecting Chrome version", file=sys.stderr)
 
     return None
 
@@ -100,7 +99,7 @@ def _get_latest_chromedriver_version():
         stable_version = data.get("channels", {}).get("Stable", {}).get("version")
         return stable_version
     except Exception as e:
-        logging.exception(f"Error getting latest ChromeDriver version: {e}")
+        print(f"Error getting latest ChromeDriver version: {e}", file=sys.stderr)
         return None
 
 
@@ -120,29 +119,26 @@ def _get_chromedriver_download_url(version: str) -> Tuple[str, str]:
     return url, ext
 
 def download_file(url, filepath):
-    logging.info(f"Downloading ChromeDriver from: {url}")
+    print(f"Downloading ChromeDriver from: {url}")
     
     response = requests.get(url, stream=True, timeout=30)
     response.raise_for_status()
     
-    total_size = int(response.headers.get('content-length', 0))
-    downloaded = 0
+    total_size = int(response.headers.get('content-length', 0)) or None
     
     with open(filepath, 'wb') as f:
-        for chunk in response.iter_content(chunk_size=8192):
-            if chunk:
-                f.write(chunk)
-                downloaded += len(chunk)
-                if total_size > 0:
-                    percent = (downloaded / total_size) * 100
-                    logging.info("Progress: %.1f%%", percent)
+        with tqdm(total=total_size, unit='B', unit_scale=True, desc="chromedriver") as pbar:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+                    pbar.update(len(chunk))
     
-    logging.info("Download completed")
+    print("Download completed.")
     return filepath
 
 
 def extract_chromedriver(archive_path, extract_to, ext):
-    logging.info(f"Extracting ChromeDriver from {archive_path}...")
+    print(f"Extracting ChromeDriver from {archive_path}...")
     
     if ext == "zip":
         with zipfile.ZipFile(archive_path, 'r') as zip_ref:
@@ -179,37 +175,37 @@ def make_executable(filepath):
 
 
 def main():
-    logging.info("=" * 60)
-    logging.info("Download ChromeDriver")
-    logging.info("=" * 60)
+    print("=" * 60)
+    print("Download ChromeDriver")
+    print("=" * 60)
     
-    project_root = Path(__file__).parent
+    project_root = Path(__file__).parent.parent
     chromedriver_path = project_root / "chromedriver"
     
     if chromedriver_path.exists():
         response = input(f"ChromeDriver already exists in {chromedriver_path}. Do you want to replace it? (y/N): ")
-        if response.lower() != 's':
-            logging.info("Operation cancelled.")
+        if response.lower() != 'y':
+            print("Operation cancelled.")
             return
         os.remove(chromedriver_path)
     
     chrome_version = _get_chrome_version()
     if chrome_version:
-        logging.info(f"Chrome version detected: {chrome_version}")
+        print(f"Chrome version detected: {chrome_version}")
     
-    logging.info("Getting latest ChromeDriver version...")
+    print("Getting latest ChromeDriver version...")
     latest_version = _get_latest_chromedriver_version()
     
     if not latest_version:
-        logging.error("Error getting latest ChromeDriver version")
+        print("Error getting latest ChromeDriver version", file=sys.stderr)
         sys.exit(1)
     
-    logging.info(f"Latest ChromeDriver version: {latest_version}")
+    print(f"Latest ChromeDriver version: {latest_version}")
     
     try:
         download_url, ext = _get_chromedriver_download_url(latest_version)
     except Exception as e:
-        logging.error(f"Error getting download URL: {e}")
+        print(f"Error getting download URL: {e}", file=sys.stderr)
         sys.exit(1)
     
     temp_file = project_root / f"chromedriver_temp.{ext}"
@@ -227,18 +223,18 @@ def main():
             
             make_executable(chromedriver_path)
             
-            logging.info(f"\n✓ ChromeDriver downloaded successfully!")
-            logging.info(f"  Location: {chromedriver_path}")
-            logging.info(f"  Version: {latest_version}")
+            print("\n✓ ChromeDriver downloaded successfully!")
+            print(f"  Location: {chromedriver_path}")
+            print(f"  Version: {latest_version}")
         else:
-            logging.error("Error extracting ChromeDriver.")
+            print("Error extracting ChromeDriver.", file=sys.stderr)
             sys.exit(1)
     
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error downloading ChromeDriver: {e}")
+        print(f"Error downloading ChromeDriver: {e}", file=sys.stderr)
         sys.exit(1)
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
+        print(f"Unexpected error: {e}", file=sys.stderr)
         sys.exit(1)
     finally:
         if temp_file.exists():
