@@ -24,7 +24,6 @@ def _filename_starts_with_prova(href: str) -> bool:
 
 
 def _parse_prova_href(href: str) -> Optional[Tuple[str, str]]:
-  """Retorna (semestre, tipo): semestre em '1o_semestre' ou '2o_semestre', tipo em 'matematica' ou 'ingles'."""
   if not href or not _filename_starts_with_prova(href):
     return None
   name = href.rstrip("/").split("/")[-1].split("?")[0]
