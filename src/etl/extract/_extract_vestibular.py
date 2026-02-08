@@ -14,7 +14,7 @@ JSON_PREFIX = "a_formato_prova_ita_vestibular.json"
 
 
 def _create_json_files(output_dir: Path, headless: bool) -> None:
-  tables = ITA_VESTIBULAR_PROVAS_FLOW.tables
+  tables = DRIVER_PROVAS_VESTIBULAR_ITA.tables
   n = len(tables)
 
   options = Options()

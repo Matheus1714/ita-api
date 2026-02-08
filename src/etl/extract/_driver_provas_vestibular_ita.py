@@ -102,7 +102,6 @@ DRIVER_PROVAS_VESTIBULAR_ITA = ITAProvasFlow(
             tag="td",
           ),
         ),
-        skip_first=True,
       ),
       headers=[
         "year",
