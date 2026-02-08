@@ -2,7 +2,19 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug: ETL Extract",
+      "name": "Debug: ETL Extract (Vestibular)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.etl.extract",
+      "args": [
+        "vestibular",
+        "--no-headless",
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Debug: ETL Extract (Pos)",
       "type": "debugpy",
       "request": "launch",
       "module": "src.etl.extract",
