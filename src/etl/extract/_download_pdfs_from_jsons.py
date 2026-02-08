@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import requests
 
+
 def download_pdfs_from_jsons(
   *,
   output_dir: Path,

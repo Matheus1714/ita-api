@@ -87,6 +87,7 @@ class SeleniumTable(SeleniumElement):
     structured_data = [dict(zip(self.headers, row)) for row in data]
     return structured_data
 
+
 @dataclass
 class ITAProvasFlow:
   url: str

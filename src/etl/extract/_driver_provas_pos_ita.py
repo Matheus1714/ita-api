@@ -28,7 +28,11 @@ def _parse_prova_href(href: str) -> Optional[Tuple[str, str]]:
   if not href or not _filename_starts_with_prova(href):
     return None
   name = href.rstrip("/").split("/")[-1].split("?")[0]
-  sem = "1o_semestre" if "1oSem" in name or "-1o" in name else ("2o_semestre" if "2oSem" in name or "-2o" in name else None)
+  sem = (
+    "1o_semestre"
+    if "1oSem" in name or "-1o" in name
+    else ("2o_semestre" if "2oSem" in name or "-2o" in name else None)
+  )
   if not sem:
     return None
   tipo = "ingles" if "Ingles" in name else "matematica"

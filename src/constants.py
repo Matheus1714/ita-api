@@ -27,21 +27,25 @@ OS_ARCH_MAP = {
   },
 }
 
+
 class Discipline(Enum):
-  FISICA = 'fisica'
-  MATEMATICA = 'matematica'
-  QUIMICA = 'quimica'
-  PORTUGUES = 'portugues'
-  INGLES = 'ingles'
+  FISICA = "fisica"
+  MATEMATICA = "matematica"
+  QUIMICA = "quimica"
+  PORTUGUES = "portugues"
+  INGLES = "ingles"
+
 
 class Language(Enum):
-  PORTUGUES = 'portugues'
-  INGLES = 'ingles'
+  PORTUGUES = "portugues"
+  INGLES = "ingles"
+
 
 class TestType(Enum):
-  VESTIBULAR = 'vestibular'
-  POS = 'pos'
+  VESTIBULAR = "vestibular"
+  POS = "pos"
+
 
 class FormatType(Enum):
-  ESSAY = 'essay'
-  OBJECTIVE = 'objective'
+  ESSAY = "essay"
+  OBJECTIVE = "objective"

@@ -12,6 +12,7 @@ from src.etl.extract._download_pdfs_from_jsons import download_pdfs_from_jsons
 OUTPUT_DIR = Path("data/vestibular")
 JSON_PREFIX = "a_formato_prova_ita_vestibular.json"
 
+
 def _create_json_files(output_dir: Path, headless: bool) -> None:
   tables = ITA_VESTIBULAR_PROVAS_FLOW.tables
   n = len(tables)
@@ -32,6 +33,7 @@ def _create_json_files(output_dir: Path, headless: bool) -> None:
         f.write(json.dumps(data, indent=2, ensure_ascii=False))
   finally:
     driver.quit()
+
 
 def extract_vestibular(
   *,

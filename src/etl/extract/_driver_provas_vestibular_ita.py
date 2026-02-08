@@ -41,7 +41,16 @@ DRIVER_PROVAS_VESTIBULAR_ITA = ITAProvasFlow(
         ),
         skip_first=True,
       ),
-      headers=['year', 'prova_1f', 'answer_key_1f', 'matematica', 'fisica', 'quimica', 'portugues', 'answer_key_2f'],
+      headers=[
+        "year",
+        "prova_1f",
+        "answer_key_1f",
+        "matematica",
+        "fisica",
+        "quimica",
+        "portugues",
+        "answer_key_2f",
+      ],
       iframes=[
         BaseElement(identifier="//frame[@name='mainFrame']", tag="iframe"),
       ],
@@ -64,7 +73,15 @@ DRIVER_PROVAS_VESTIBULAR_ITA = ITAProvasFlow(
         ),
         skip_first=True,
       ),
-      headers=['year', 'prova_1f', 'answer_key_1f', 'matematica', 'fisica', 'quimica', 'redacao'],
+      headers=[
+        "year",
+        "prova_1f",
+        "answer_key_1f",
+        "matematica",
+        "fisica",
+        "quimica",
+        "redacao",
+      ],
       iframes=[
         BaseElement(identifier="//frame[@name='mainFrame']", tag="iframe"),
       ],
@@ -87,7 +104,7 @@ DRIVER_PROVAS_VESTIBULAR_ITA = ITAProvasFlow(
         ),
         skip_first=True,
       ),
-      headers=['fisica', 'portugues', 'ingles', 'matematica', 'quimica', 'answer_key'],
+      headers=["fisica", "portugues", "ingles", "matematica", "quimica", "answer_key"],
       iframes=[
         BaseElement(identifier="//frame[@name='mainFrame']", tag="iframe"),
       ],
