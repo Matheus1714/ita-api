@@ -1,4 +1,6 @@
-from src.etl.constants import PROVAS_ITA_VESTIBULAR_URL
+from src.etl.extract.constants import (
+  PROVAS_ITA_VESTIBULAR_URL,
+)
 from src.utils.selenium_elements import (
   BaseElement,
   SeleniumElement,
@@ -7,7 +9,7 @@ from src.utils.selenium_elements import (
   SeleniumTableRow,
 )
 
-ITA_VESTIBULAR_PROVAS_FLOW = ITAProvasFlow(
+DRIVER_PROVAS_VESTIBULAR_ITA = ITAProvasFlow(
   url=PROVAS_ITA_VESTIBULAR_URL,
   navigation_steps=[
     SeleniumElement(
@@ -91,40 +93,4 @@ ITA_VESTIBULAR_PROVAS_FLOW = ITAProvasFlow(
       ],
     ),
   ],
-)
-
-EXEMPLO_COM_TABELA = ITAProvasFlow(
-  url="https://getbootstrap.com/",
-  navigation_steps=[
-    SeleniumElement(
-      element=BaseElement(
-        identifier="//*[@id='bdNavbar']/div[2]/ul[1]/li[1]/a",
-        tag="a",
-      ),
-    ),
-    SeleniumElement(
-      element=BaseElement(
-        identifier="//*[@id='bd-docs-nav']/ul/li[4]/ul/li[4]/a",
-        tag="a",
-      ),
-    ),
-  ],
-  tables=SeleniumTable(
-    element=BaseElement(
-      identifier="/html/body/div[2]/main/div[3]/div[1]/div/table/tbody",
-      tag="table",
-    ),
-    row=SeleniumTableRow(
-      element=BaseElement(
-        identifier=".//tr",
-        tag="tr",
-      ),
-      item=SeleniumElement(
-        element=BaseElement(
-          identifier=".//td",
-          tag="td",
-        ),
-      ),
-    ),
-  ),
 )

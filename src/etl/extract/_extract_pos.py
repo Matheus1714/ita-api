@@ -1,0 +1,62 @@
+import json
+from pathlib import Path
+from typing import Optional
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+from src.etl.extract._driver_provas_pos_ita import DRIVER_PROVAS_POS_ITA
+from src.etl.extract._json_file_exist import json_files_exist
+from src.etl.extract._download_pdfs_from_jsons import download_pdfs_from_jsons
+
+OUTPUT_DIR = Path("data/pos")
+JSON_PREFIX = "a_formato_prova_ita_pos.json"
+
+
+def _create_json_files(output_dir: Path, headless: bool) -> None:
+  tables = DRIVER_PROVAS_POS_ITA.tables
+  n = len(tables)
+
+  options = Options()
+  if headless:
+    options.add_argument("--headless")
+  driver = webdriver.Chrome(options=options)
+
+  try:
+    driver.get(DRIVER_PROVAS_POS_ITA.url)
+    DRIVER_PROVAS_POS_ITA.navigate(driver)
+    for i, table in enumerate(tables):
+      data = table.get_data(driver)
+      filename = f"{n - i}{JSON_PREFIX}"
+      filepath = output_dir / filename
+      with open(filepath, "w", encoding="utf-8") as f:
+        f.write(json.dumps(data, indent=2, ensure_ascii=False))
+  finally:
+    driver.quit()
+
+
+def extract_pos(
+  *,
+  headless: bool = True,
+  force_replace: bool = False,
+  output_dir: Optional[Path] = None,
+) -> None:
+  output_dir = output_dir or OUTPUT_DIR
+  output_dir.mkdir(parents=True, exist_ok=True)
+
+  tables = DRIVER_PROVAS_POS_ITA.tables
+  n = len(tables)
+  json_exist = json_files_exist(
+    output_dir=output_dir,
+    n=n,
+    json_prefix=JSON_PREFIX,
+  )
+
+  if force_replace or not json_exist:
+    _create_json_files(output_dir, headless)
+  download_pdfs_from_jsons(
+    output_dir=output_dir,
+    n=n,
+    json_prefix=JSON_PREFIX,
+    pdf_filename_prefix="prova_ita_pos",
+  )

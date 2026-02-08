@@ -26,3 +26,22 @@ OS_ARCH_MAP = {
     Architecture.ARM64: "win-arm64",
   },
 }
+
+class Discipline(Enum):
+  FISICA = 'fisica'
+  MATEMATICA = 'matematica'
+  QUIMICA = 'quimica'
+  PORTUGUES = 'portugues'
+  INGLES = 'ingles'
+
+class Language(Enum):
+  PORTUGUES = 'portugues'
+  INGLES = 'ingles'
+
+class TestType(Enum):
+  VESTIBULAR = 'vestibular'
+  POS = 'pos'
+
+class FormatType(Enum):
+  ESSAY = 'essay'
+  OBJECTIVE = 'objective'
