@@ -104,7 +104,15 @@ DRIVER_PROVAS_VESTIBULAR_ITA = ITAProvasFlow(
         ),
         skip_first=True,
       ),
-      headers=["fisica", "portugues", "ingles", "matematica", "quimica", "answer_key"],
+      headers=[
+        "year",
+        "fisica",
+        "portugues",
+        "ingles",
+        "matematica",
+        "quimica",
+        "answer_key",
+      ],
       iframes=[
         BaseElement(identifier="//frame[@name='mainFrame']", tag="iframe"),
       ],
