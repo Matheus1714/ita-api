@@ -11,12 +11,16 @@ asyncpg = "*"
 pydantic-settings = "*"
 psycopg2-binary = "*"
 requests = "*"
-selenium = "*"
 
 [dev-packages]
 alembic = "*"
+pandas = "*"
+pymupdf = "*"
+matplotlib = "*"
 ruff = "*"
 tqdm = "*"
+ipykernel = "*"
+selenium = "*"
 
 [requires]
 python_version = "3.10"
