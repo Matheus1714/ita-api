@@ -1,0 +1,29 @@
+import re
+
+MAX_QUESTIONS = 60
+MARGIN_LEFT = 0
+MARGIN_TOP = 12
+MARGIN_BOTTOM = 4
+OBJECTIVE_BLOCK_END_MARGIN = 6
+MIN_NON_QUESTION_REGION_HEIGHT = 20
+DRAFT_PAGE_MAX_TEXT_LEN = 150
+DPI = 150
+
+_QUESTION_WORD = r"Quest(?:ão|ao|a\u0303o|\u02dcao)"
+
+QUESTION_START_REGEX = re.compile(
+  rf"{_QUESTION_WORD}\s+(\d+)\s*[.:]?(?:\s|$)",
+  re.IGNORECASE,
+)
+QUESTION_WORD_ALONE_REGEX = re.compile(rf"{_QUESTION_WORD}\s*$", re.IGNORECASE)
+QUESTION_NUMBER_ONLY_LINE_REGEX = re.compile(r"^\s*(\d+)\s*[.:]?(?:\s|$)")
+
+QUESTION_END_REGEX = QUESTION_START_REGEX
+
+QUESTION_IN_TEXT_REGEX = re.compile(
+  rf"{_QUESTION_WORD}\s+\d+",
+  re.IGNORECASE,
+)
+
+OBJECTIVE_OPTION_LETTERS = ("A", "B", "C", "D", "E")
+OBJECTIVE_OPTION_LINE_REGEX = re.compile(r"^\s*([A-E])\s*[.)]\s*", re.IGNORECASE)

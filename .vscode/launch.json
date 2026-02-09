@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug: ETL Extract (Vestibular)",
+      "name": "ETL Extract (Vestibular)",
       "type": "debugpy",
       "request": "launch",
       "module": "src.etl.extract",
@@ -14,7 +14,7 @@
       "console": "integratedTerminal"
     },
     {
-      "name": "Debug: ETL Extract (Pos)",
+      "name": "ETL Extract (Pos)",
       "type": "debugpy",
       "request": "launch",
       "module": "src.etl.extract",
@@ -22,6 +22,14 @@
         "pos",
         "--no-headless",
       ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "ETL Transform",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.etl.transform",
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
     },
